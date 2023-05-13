@@ -2,7 +2,7 @@ use diesel::prelude::*;
 use rocket::response::status::Created;
 use rocket::serde::json::Json;
 
-use provoit_types::models::user::{NewUser, User, UpdateUser};
+use provoit_types::models::user::{NewUser, UpdateUser, User};
 use provoit_types::schema::*;
 
 use super::DbResult;
