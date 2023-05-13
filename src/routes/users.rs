@@ -2,7 +2,7 @@ use diesel::prelude::*;
 use rocket::response::status::Created;
 use rocket::serde::json::Json;
 
-use provoit_types::models::{NewUser, User};
+use provoit_types::models::user::{NewUser, User, UpdateUser};
 use provoit_types::schema::*;
 
 use super::DbResult;
@@ -11,7 +11,7 @@ use crate::database::Db;
 #[get("/<id>")]
 pub async fn read(db: Db, id: u64) -> DbResult<Json<User>> {
     let users: User = db
-        .run(move |conn| users::table.find(id as i64).get_result(conn))
+        .run(move |conn| users::table.find(id).get_result(conn))
         .await?;
 
     Ok(Json(users))
@@ -38,18 +38,18 @@ pub async fn create(db: Db, user: Json<NewUser>) -> DbResult<Created<()>> {
     Ok(Created::new("/"))
 }
 
-// #[put("/<id>", data = "<user>")]
-// pub async fn update(db: Db, id: u64, user: Json<NewUser>) -> DbResult<()> {
-//     db.run(move |conn| {
-//         diesel::update(users::table)
-//             .set(user)
-//             .filter(users::id.eq(id as i64))
-//             .execute(conn)
-//     })
-//     .await?;
-//
-//     Ok(())
-// }
+#[put("/<id>", data = "<user>")]
+pub async fn update(db: Db, id: u64, user: Json<UpdateUser>) -> DbResult<()> {
+    db.run(move |conn| {
+        diesel::update(users::table)
+            .set(&*user)
+            .filter(users::id.eq(id))
+            .execute(conn)
+    })
+    .await?;
+
+    Ok(())
+}
 
 #[delete("/")]
 pub async fn delete(db: Db) -> DbResult<()> {

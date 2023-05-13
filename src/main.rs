@@ -13,6 +13,12 @@ fn rocket() -> _ {
         .mount("/", routes![version::version])
         .mount(
             "/users",
-            routes![users::read, users::list, users::create, users::delete],
+            routes![
+                users::read,
+                users::list,
+                users::create,
+                users::update,
+                users::delete
+            ],
         )
 }

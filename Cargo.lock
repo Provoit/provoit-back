@@ -809,7 +809,7 @@ dependencies = [
 [[package]]
 name = "provoit-types"
 version = "0.1.0"
-source = "git+https://github.com/Provoit/provoit-types.git#1682df8ea9cc3b884bd95d000efad25d7974b8b3"
+source = "git+https://github.com/Provoit/provoit-types.git#47f442643ca0831bf10fd0d641db330d08551902"
 dependencies = [
  "diesel",
  "diesel_migrations",
