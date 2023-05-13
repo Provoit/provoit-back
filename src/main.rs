@@ -1,12 +1,18 @@
 #[macro_use]
 extern crate rocket;
 
-#[get("/version")]
-fn version() -> &'static str {
-    env!("CARGO_PKG_VERSION")
-}
+mod database;
+mod routes;
+
+use routes::{users, version};
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![version])
+    rocket::build()
+        .attach(database::setup())
+        .mount("/", routes![version::version])
+        .mount(
+            "/users",
+            routes![users::read, users::list, users::create, users::delete],
+        )
 }
