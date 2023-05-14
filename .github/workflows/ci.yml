@@ -29,7 +29,7 @@ jobs:
         run: cargo build --verbose --locked
 
       - name: Lint
-        run: cargo clippy --verbose
+        run: cargo clippy --verbose --no-deps
 
       - name: Test
         run: cargo test --verbose --locked
@@ -41,4 +41,4 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Docs
-        run: cargo doc --verbose --no-deps
+        run: cargo doc --verbose --no-deps --locked
