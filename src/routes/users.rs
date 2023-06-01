@@ -51,10 +51,14 @@ pub async fn update(db: Db, id: u64, user: Json<UpdateUser>) -> DbResult<()> {
     Ok(())
 }
 
-#[delete("/")]
-pub async fn delete(db: Db) -> DbResult<()> {
-    db.run(move |conn| diesel::delete(users::table).execute(conn))
-        .await?;
+#[delete("/<id>")]
+pub async fn delete(db: Db, id: u64) -> DbResult<()> {
+    db.run(move |conn| {
+        diesel::delete(users::table)
+            .filter(users::id.eq(id))
+            .execute(conn)
+    })
+    .await?;
 
     Ok(())
 }
