@@ -1,2 +1,2 @@
-[default.databases.diesel_demo]
-url = "mysql://root:root@127.0.0.1:3306/diesel_demo"
+[default.databases.provoit]
+url = "mysql://root:root@127.0.0.1:3306/provoit"

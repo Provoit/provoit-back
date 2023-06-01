@@ -4,7 +4,7 @@ use rocket::{Build, Rocket};
 use rocket_sync_db_pools::database;
 use rocket_sync_db_pools::diesel;
 
-#[database("diesel_demo")]
+#[database("provoit")]
 /// Wrapper for a database connection.
 /// To be used by route functions.
 pub struct Db(diesel::MysqlConnection);
