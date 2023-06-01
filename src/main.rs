@@ -3,6 +3,7 @@ extern crate rocket;
 
 mod database;
 mod routes;
+mod auth;
 
 use routes::{users, version};
 
