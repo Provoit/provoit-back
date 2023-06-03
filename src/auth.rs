@@ -5,6 +5,10 @@ use rocket::{
     Request,
 };
 
+/// Authentification request guard.
+/// Must be a parameter of authenticated routes.
+///
+/// See https://rocket.rs/v0.5-rc/guide/requests/#request-guards
 pub struct Auth;
 
 #[cfg(debug_assertions)]
