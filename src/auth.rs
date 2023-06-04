@@ -1,3 +1,4 @@
+use provoit_types::models::users::User;
 use rocket::{
     http::Status,
     outcome::Outcome,
@@ -11,24 +12,37 @@ use crate::database::Db;
 #[cfg(not(debug_assertions))]
 const TOKEN_VALIDITY: u8 = 24;
 
-/// Authentification request guard.
+/// Authentication request guard.
 /// Must be a parameter of authenticated routes.
 ///
 /// See https://rocket.rs/v0.5-rc/guide/requests/#request-guards
-pub struct Auth;
+pub struct Auth(pub User);
 
 #[cfg(debug_assertions)]
-async fn is_valid(_req: &Request<'_>, _db: Db) -> bool {
-    true
+async fn is_valid(_req: &Request<'_>, _db: Db) -> Option<User> {
+    use sha2::{Digest, Sha512};
+
+    Some(User {
+        id: 1,
+        firstname: "root".to_owned(),
+        lastname: "".to_owned(),
+        mail: "root@provoit.com".to_owned(),
+        passwd: base16ct::lower::encode_string(&Sha512::digest("test")),
+        token: Some("".to_owned()),
+        token_gentime: Some(chrono::Local::now().naive_local()),
+        profile_pic: None,
+        smoker: false,
+        id_favorite_vehicle: None,
+    })
 }
 
 #[cfg(not(debug_assertions))]
-async fn is_valid(req: &Request<'_>, db: Db) -> bool {
+async fn is_valid(req: &Request<'_>, db: Db) -> Option<User> {
     use std::ops::Sub;
 
     use chrono::Duration;
     use diesel::prelude::*;
-    use provoit_types::{models::users::User, schema::users};
+    use provoit_types::schema::users;
 
     let cookie = req.cookies().get("token");
 
@@ -49,10 +63,12 @@ async fn is_valid(req: &Request<'_>, db: Db) -> bool {
             })
             .await;
 
-        user.is_ok() && user.unwrap().is_some()
-    } else {
-        false
+        if let Ok(user) = user {
+            return user;
+        }
     }
+
+    None
 }
 
 #[rocket::async_trait]
@@ -62,8 +78,8 @@ impl<'r> FromRequest<'r> for Auth {
     async fn from_request(req: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
         let db = Db::from_request(req).await.unwrap();
 
-        if is_valid(req, db).await {
-            Outcome::Success(Auth)
+        if let Some(user) = is_valid(req, db).await {
+            Outcome::Success(Auth(user))
         } else {
             Outcome::Failure((Status::Unauthorized, ()))
         }
