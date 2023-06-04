@@ -1,9 +1,9 @@
 #[macro_use]
 extern crate rocket;
 
+mod auth;
 mod database;
 mod routes;
-mod auth;
 
 use routes::{users, version};
 
@@ -12,6 +12,7 @@ fn rocket() -> _ {
     rocket::build()
         .attach(database::setup())
         .mount("/", routes![version::version])
+        .mount("/", routes![routes::auth::login])
         .mount(
             "/users",
             routes![
