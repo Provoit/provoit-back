@@ -6,10 +6,11 @@ use provoit_types::models::users::{NewUser, UpdateUser, User};
 use provoit_types::schema::*;
 
 use super::DbResult;
+use crate::auth::Auth;
 use crate::database::Db;
 
 #[get("/<id>")]
-pub async fn read(db: Db, id: u64) -> DbResult<Json<User>> {
+pub async fn read(db: Db, id: u64, _auth: Auth) -> DbResult<Json<User>> {
     let users: User = db
         .run(move |conn| users::table.find(id).get_result(conn))
         .await?;
@@ -18,7 +19,7 @@ pub async fn read(db: Db, id: u64) -> DbResult<Json<User>> {
 }
 
 #[get("/")]
-pub async fn list(db: Db) -> DbResult<Json<Vec<User>>> {
+pub async fn list(db: Db, _auth: Auth) -> DbResult<Json<Vec<User>>> {
     let users: Vec<User> = db
         .run(move |conn| users::table.select(users::all_columns).load(conn))
         .await?;
@@ -52,7 +53,7 @@ pub async fn update(db: Db, id: u64, user: Json<UpdateUser>) -> DbResult<()> {
 }
 
 #[delete("/<id>")]
-pub async fn delete(db: Db, id: u64) -> DbResult<()> {
+pub async fn delete(db: Db, id: u64, _auth: Auth) -> DbResult<()> {
     db.run(move |conn| {
         diesel::delete(users::table)
             .filter(users::id.eq(id))
