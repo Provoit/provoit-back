@@ -2,6 +2,7 @@
 extern crate rocket;
 
 mod auth;
+mod cors;
 mod database;
 mod routes;
 
@@ -11,6 +12,7 @@ use routes::{users, version};
 fn rocket() -> _ {
     rocket::build()
         .attach(database::setup())
+        .attach(cors::setup())
         .mount("/", routes![version::version])
         .mount("/", routes![routes::auth::login, routes::auth::logout])
         .mount(
