@@ -2,9 +2,9 @@
 extern crate rocket;
 
 mod auth;
+mod cors;
 mod database;
 mod routes;
-mod cors;
 
 use routes::{users, version};
 
