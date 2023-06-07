@@ -2,17 +2,21 @@
 extern crate rocket;
 
 mod auth;
-mod cors;
 mod database;
 mod routes;
 
+use rocket_cors::CorsOptions;
 use routes::{users, version};
 
 #[launch]
 fn rocket() -> _ {
+    let cors = CorsOptions::default()
+        .to_cors()
+        .expect("Failed to setup cors");
+
     rocket::build()
         .attach(database::setup())
-        .attach(cors::setup())
+        .attach(cors)
         .mount("/", routes![version::version])
         .mount("/", routes![routes::auth::login, routes::auth::logout])
         .mount(

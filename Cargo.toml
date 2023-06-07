@@ -14,6 +14,7 @@ rocket_sync_db_pools = { version = "0.1.0-rc.3", features = ["diesel_mysql_pool"
 rocket = { version = "0.5.0-rc.3", features = ["json"] }
 sha2 = "0.10.6"
 base16ct = { version = "0.2.0", features = ["alloc"] }
+rocket_cors = "0.6.0-alpha2"
 
 [profile.release]
 strip = true
