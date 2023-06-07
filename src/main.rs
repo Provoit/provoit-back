@@ -10,7 +10,9 @@ use routes::{users, version};
 
 #[launch]
 fn rocket() -> _ {
-    let cors = CorsOptions::default().to_cors().expect("Failed to setup cors");
+    let cors = CorsOptions::default()
+        .to_cors()
+        .expect("Failed to setup cors");
 
     rocket::build()
         .attach(database::setup())
