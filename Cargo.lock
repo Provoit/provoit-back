@@ -940,7 +940,7 @@ dependencies = [
 [[package]]
 name = "provoit-types"
 version = "0.1.0"
-source = "git+https://github.com/Provoit/provoit-types.git#31cdf333ab8422a7853fd4d3f5e4e2e5628b77cb"
+source = "git+https://github.com/Provoit/provoit-types.git#1ce64853f44b59aef95015c6c55c6993eede9ed5"
 dependencies = [
  "chrono",
  "diesel",
