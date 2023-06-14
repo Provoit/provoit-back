@@ -6,7 +6,7 @@ mod database;
 mod routes;
 
 use rocket_cors::CorsOptions;
-use routes::{users, vehicles, version};
+use routes::{trips, users, vehicles, version};
 
 #[launch]
 fn rocket() -> _ {
@@ -36,6 +36,16 @@ fn rocket() -> _ {
                 vehicles::create,
                 vehicles::update,
                 vehicles::delete,
+            ],
+        )
+        .mount(
+            "/trips",
+            routes![
+                trips::read,
+                trips::list,
+                trips::create,
+                trips::update,
+                trips::delete
             ],
         )
 }
