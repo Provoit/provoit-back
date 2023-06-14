@@ -1,6 +1,7 @@
 use rocket::response::Debug;
 
 pub mod auth;
+pub mod trips;
 pub mod users;
 pub mod vehicles;
 pub mod version;
