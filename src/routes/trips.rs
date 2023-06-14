@@ -2,7 +2,7 @@ use diesel::prelude::*;
 use rocket::response::status::Created;
 use rocket::serde::json::Json;
 
-use provoit_types::models::trips::{Trip, NewTrip, UpdateTrip};
+use provoit_types::models::trips::{NewTrip, Trip, UpdateTrip};
 use provoit_types::schema::*;
 
 use super::DbResult;
