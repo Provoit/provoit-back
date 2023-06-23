@@ -19,7 +19,10 @@ pub async fn read(db: Db, id: u64, _auth: Auth) -> DbResult<Json<Vehicle>> {
 }
 
 #[post("/", data = "<vehicle>")]
-pub async fn create(db: Db, vehicle: Json<NewVehicle>, _auth: Auth) -> DbResult<()> {
+pub async fn create(db: Db, mut vehicle: Json<NewVehicle>, auth: Auth) -> DbResult<()> {
+    // Force a correct id_user at creation
+    vehicle.id_user = auth.0.id;
+
     db.run(move |conn| {
         diesel::insert_into(vehicles::table)
             .values(&*vehicle)

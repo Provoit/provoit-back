@@ -1,4 +1,5 @@
 use diesel::prelude::*;
+use provoit_types::models::vehicles::Vehicle;
 use rocket::response::status::Created;
 use rocket::serde::json::Json;
 
@@ -16,6 +17,21 @@ pub async fn read(db: Db, id: u64, _auth: Auth) -> DbResult<Json<User>> {
         .await?;
 
     Ok(Json(users))
+}
+
+/// Gets the vehicles of the given user
+#[get("/<id>/vehicles")]
+pub async fn user_vehicles(db: Db, id: u64, _auth: Auth) -> DbResult<Json<Vec<Vehicle>>> {
+    let vehicles: Vec<Vehicle> = db
+        .run(move |conn| {
+            vehicles::table
+                .select(vehicles::all_columns)
+                .filter(vehicles::id_user.eq(id))
+                .load(conn)
+        })
+        .await?;
+
+    Ok(Json(vehicles))
 }
 
 #[get("/")]
