@@ -1,8 +1,9 @@
 use diesel::prelude::*;
+use provoit_types::models::creation::CreateTrip;
 use rocket::response::status::Created;
 use rocket::serde::json::Json;
 
-use provoit_types::models::trips::{NewTrip, Trip, UpdateTrip};
+use provoit_types::models::trips::{Trip, UpdateTrip};
 use provoit_types::schema::*;
 
 use super::DbResult;
@@ -27,12 +28,32 @@ pub async fn list(db: Db, _auth: Auth) -> DbResult<Json<Vec<Trip>>> {
     Ok(Json(trips))
 }
 
-#[post("/", data = "<trip>")]
-pub async fn create(db: Db, trip: Json<NewTrip>) -> DbResult<Created<()>> {
-    db.run(move |conn| {
-        diesel::insert_into(trips::table)
-            .values(&*trip)
-            .execute(conn)
+#[post("/", data = "<data>")]
+pub async fn create(db: Db, mut data: Json<CreateTrip>) -> DbResult<Created<()>> {
+    db.run(|conn| {
+        MysqlConnection::transaction(conn, move |conn| {
+            diesel::insert_into(timings::table)
+                .values(&data.start_timing)
+                .execute(conn)?;
+            diesel::insert_into(timings::table)
+                .values(&data.end_timing)
+                .execute(conn)?;
+
+            let ids: Vec<u64> = timings::table
+                .select(timings::id)
+                .order(timings::id.desc())
+                .limit(2)
+                .load(conn)?;
+
+            data.trip.id_end_timing = *ids.first().expect("End timing id should exist");
+            data.trip.id_start_timing = *ids.get(1).expect("Start timing id should exist");
+
+            diesel::insert_into(trips::table)
+                .values(&data.trip)
+                .execute(conn)?;
+
+            diesel::result::QueryResult::Ok(())
+        })
     })
     .await?;
 
