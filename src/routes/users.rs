@@ -19,6 +19,12 @@ pub async fn read(db: Db, id: u64, _auth: Auth) -> DbResult<Json<User>> {
     Ok(Json(users))
 }
 
+/// Gets the currently logged in user
+#[get("/me")]
+pub async fn current(auth: Auth) -> DbResult<Json<User>> {
+    Ok(Json(auth.0))
+}
+
 /// Gets the vehicles of the given user
 #[get("/<id>/vehicles")]
 pub async fn user_vehicles(db: Db, id: u64, _auth: Auth) -> DbResult<Json<Vec<Vehicle>>> {
