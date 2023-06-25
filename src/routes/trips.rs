@@ -1,5 +1,6 @@
-use diesel::prelude::*;
+use diesel::{insert_into, prelude::*};
 use provoit_types::models::creation::CreateTrip;
+use provoit_types::models::trip_road_types::NewTripRoadType;
 use rocket::response::status::Created;
 use rocket::serde::json::Json;
 
@@ -50,6 +51,24 @@ pub async fn create(db: Db, mut data: Json<CreateTrip>) -> DbResult<Created<()>>
 
             diesel::insert_into(trips::table)
                 .values(&data.trip)
+                .execute(conn)?;
+
+            let id_trip: u64 = trips::table
+                .select(trips::id)
+                .order(trips::id.desc())
+                .first(conn)?;
+
+            let trip_road: Vec<NewTripRoadType> = data
+                .road_types
+                .iter()
+                .map(|i| NewTripRoadType {
+                    id_trip,
+                    id_road_type: *i,
+                })
+                .collect();
+
+            diesel::insert_into(trip_road_types::table)
+                .values(&trip_road)
                 .execute(conn)?;
 
             diesel::result::QueryResult::Ok(())
