@@ -5,6 +5,9 @@ services:
     image: mysql
     ports:
       - 3306:3306
+    working_dir: "/workspace"
+    volumes:
+      - ".:/workspace"
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: provoit
