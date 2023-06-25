@@ -23,6 +23,7 @@ fn rocket() -> _ {
             "/users",
             routes![
                 users::read,
+                users::current,
                 users::user_vehicles,
                 users::list,
                 users::create,
