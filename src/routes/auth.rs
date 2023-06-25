@@ -5,8 +5,8 @@ use provoit_types::models::users::{LoginUser, User};
 use provoit_types::schema::users;
 use rand;
 use rand::distributions::{Alphanumeric, DistString};
-use rocket::http::Cookie;
 use rocket::response::Responder;
+use rocket::serde::Serialize;
 use rocket::serde::json::Json;
 
 use crate::auth::Auth;
@@ -14,42 +14,23 @@ use crate::database::Db;
 
 use super::DbResult;
 
+#[derive(Serialize)]
+pub struct UserInfo {
+    user: Option<User>,
+    token: String
+}
+
 /// Defines the response to the login route.
 #[derive(Responder)]
-pub enum LoginResponse<'a> {
+pub enum LoginResponse {
     #[response(status = 200)]
-    Ok((), Cookie<'a>),
+    Ok(Json<UserInfo>),
     #[response(status = 401)]
     Unauthorized(()),
 }
 
-impl<'a> LoginResponse<'a> {
-    /// Creates an `ok` `LoginResponse`.
-    pub fn ok(token: String) -> LoginResponse<'a> {
-        LoginResponse::Ok((), Cookie::build("token", token).finish())
-    }
-}
-
-/// Defines the response to the logout route.
-/// Logout can only send an empty cookie back.
-#[derive(Responder)]
-pub struct LogoutResponse<'a> {
-    inner: (),
-    cookie: Cookie<'a>,
-}
-
-impl<'a> LogoutResponse<'a> {
-    /// Creates a new `LogoutResponse`.
-    pub fn new() -> Self {
-        Self {
-            inner: (),
-            cookie: Cookie::build("token", "").finish(),
-        }
-    }
-}
-
 #[post("/login", data = "<login_user>")]
-pub async fn login<'a>(db: Db, login_user: Json<LoginUser>) -> DbResult<LoginResponse<'a>> {
+pub async fn login<'a>(db: Db, login_user: Json<LoginUser>) -> DbResult<LoginResponse> {
     let user: Option<User> = db
         .run(move |conn| {
             users::table
@@ -78,14 +59,17 @@ pub async fn login<'a>(db: Db, login_user: Json<LoginUser>) -> DbResult<LoginRes
         })
         .await?;
 
-        Ok(LoginResponse::ok(token))
+        Ok(LoginResponse::Ok(Json(UserInfo {
+            user: Some(user),
+            token
+        })))
     } else {
         Ok(LoginResponse::Unauthorized(()))
     }
 }
 
 #[post("/logout")]
-pub async fn logout<'a>(db: Db, auth: Auth) -> DbResult<LogoutResponse<'a>> {
+pub async fn logout(db: Db, auth: Auth) -> DbResult<()> {
     let user = auth.0;
 
     db.run(move |conn| {
@@ -99,5 +83,5 @@ pub async fn logout<'a>(db: Db, auth: Auth) -> DbResult<LogoutResponse<'a>> {
     })
     .await?;
 
-    Ok(LogoutResponse::new())
+    Ok(())
 }
