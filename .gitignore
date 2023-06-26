@@ -1,3 +1,6 @@
 .idea
 .vscode
 /target
+
+# Fake data
+fake.sql
