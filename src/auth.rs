@@ -44,10 +44,10 @@ async fn is_valid(req: &Request<'_>, db: Db) -> Option<User> {
     use diesel::prelude::*;
     use provoit_types::schema::users;
 
-    let cookie = req.cookies().get("token");
+    let token = req.headers().get_one("x-token");
 
-    if let Some(cookie) = cookie {
-        let token = cookie.value().to_owned();
+    if let Some(token) = token {
+        let token = token.to_owned();
         let now_minus_validity = chrono::Local::now()
             .naive_local()
             .sub(Duration::hours(TOKEN_VALIDITY as i64));
