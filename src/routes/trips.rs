@@ -1,4 +1,4 @@
-use diesel::{insert_into, prelude::*};
+use diesel::prelude::*;
 use provoit_types::models::creation::CreateTrip;
 use provoit_types::models::trip_road_types::NewTripRoadType;
 use rocket::response::status::Created;
