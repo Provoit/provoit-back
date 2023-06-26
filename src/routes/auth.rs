@@ -6,8 +6,8 @@ use provoit_types::schema::users;
 use rand;
 use rand::distributions::{Alphanumeric, DistString};
 use rocket::response::Responder;
-use rocket::serde::Serialize;
 use rocket::serde::json::Json;
+use rocket::serde::Serialize;
 
 use crate::auth::Auth;
 use crate::database::Db;
@@ -17,7 +17,7 @@ use super::DbResult;
 #[derive(Serialize)]
 pub struct UserInfo {
     user: Option<User>,
-    token: String
+    token: String,
 }
 
 /// Defines the response to the login route.
@@ -61,7 +61,7 @@ pub async fn login<'a>(db: Db, login_user: Json<LoginUser>) -> DbResult<LoginRes
 
         Ok(LoginResponse::Ok(Json(UserInfo {
             user: Some(user),
-            token
+            token,
         })))
     } else {
         Ok(LoginResponse::Unauthorized(()))
