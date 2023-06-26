@@ -46,6 +46,7 @@ fn rocket() -> _ {
                 trips::read,
                 trips::search,
                 trips::create,
+                trips::join,
                 trips::update,
                 trips::delete
             ],

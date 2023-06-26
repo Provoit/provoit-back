@@ -1,6 +1,7 @@
 use diesel::prelude::*;
 use provoit_types::models::creation::CreateTrip;
 use provoit_types::models::trip_road_types::NewTripRoadType;
+use provoit_types::models::user_trips::NewUserTrip;
 use rocket::response::status::Created;
 use rocket::serde::json::Json;
 
@@ -30,7 +31,7 @@ pub async fn search(db: Db, _auth: Auth) -> DbResult<Json<Vec<Trip>>> {
 }
 
 #[post("/", data = "<data>")]
-pub async fn create(db: Db, mut data: Json<CreateTrip>) -> DbResult<Created<()>> {
+pub async fn create(db: Db, mut data: Json<CreateTrip>, _auth: Auth) -> DbResult<Created<()>> {
     db.run(|conn| {
         MysqlConnection::transaction(conn, move |conn| {
             diesel::insert_into(timings::table)
@@ -79,8 +80,23 @@ pub async fn create(db: Db, mut data: Json<CreateTrip>) -> DbResult<Created<()>>
     Ok(Created::new("/"))
 }
 
+#[post("/join/<id>")]
+pub async fn join(db: Db, id: u64, auth: Auth) -> DbResult<()> {
+    db.run(move |conn| {
+        diesel::insert_into(user_trips::table)
+            .values(NewUserTrip {
+                id_trip: id,
+                id_user: auth.0.id,
+            })
+            .execute(conn)
+    })
+    .await?;
+
+    Ok(())
+}
+
 #[put("/<id>", data = "<trip>")]
-pub async fn update(db: Db, id: u64, trip: Json<UpdateTrip>) -> DbResult<()> {
+pub async fn update(db: Db, id: u64, trip: Json<UpdateTrip>, _auth: Auth) -> DbResult<()> {
     db.run(move |conn| {
         diesel::update(trips::table)
             .set(&*trip)
