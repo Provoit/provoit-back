@@ -44,7 +44,7 @@ fn rocket() -> _ {
             "/trips",
             routes![
                 trips::read,
-                trips::list,
+                trips::search,
                 trips::create,
                 trips::update,
                 trips::delete

@@ -20,8 +20,8 @@ pub async fn read(db: Db, id: u64, _auth: Auth) -> DbResult<Json<Trip>> {
     Ok(Json(trip))
 }
 
-#[get("/")]
-pub async fn list(db: Db, _auth: Auth) -> DbResult<Json<Vec<Trip>>> {
+#[get("/search")]
+pub async fn search(db: Db, _auth: Auth) -> DbResult<Json<Vec<Trip>>> {
     let trips: Vec<Trip> = db
         .run(move |conn| trips::table.select(trips::all_columns).load(conn))
         .await?;
